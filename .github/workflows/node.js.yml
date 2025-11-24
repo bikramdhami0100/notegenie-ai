@@ -1,0 +1,41 @@
+name: Deploy React App (Self-Hosted Runner)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build React app
+      run: npm run build
+
+    - name: Copy build to dist folder
+      run: |
+        sudo mkdir -p /home/ubuntu/notegenie-ai/dist
+        sudo cp -r dist/* /home/ubuntu/notegenie-ai/dist/
+        sudo chown -R www-data:www-data /home/ubuntu/notegenie-ai/dist
+
+    - name: Set permissions
+      run: |
+        sudo chown -R www-data:www-data /home/ubuntu/notegenie-ai/dist
+        sudo chmod -R 755 /home/ubuntu/notegenie-ai/dist
+        sudo chmod 755 /home/ubuntu/notegenie-ai
+        sudo chmod 755 /home/ubuntu
+
+    - name: Restart Nginx
+      run: sudo systemctl restart nginx
