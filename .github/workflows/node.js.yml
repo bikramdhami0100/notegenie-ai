@@ -26,8 +26,9 @@ jobs:
 
     - name: Copy build to dist folder
       run: |
-        mkdir -p /home/ubuntu/notegenie-ai/dist
-        cp -r dist/* /home/ubuntu/notegenie-ai/dist/
+        sudo mkdir -p /home/ubuntu/notegenie-ai/dist
+        sudo cp -r dist/* /home/ubuntu/notegenie-ai/dist/
+        sudo chown -R www-data:www-data /home/ubuntu/notegenie-ai/dist
 
     - name: Set permissions
       run: |
