@@ -1,0 +1,5 @@
+{
+  "name": "NoteGenie AI",
+  "description": "An intelligent study companion that generates structured syllabi and detailed notes with real-life examples and video references using Gemini 2.5 Flash.",
+  "requestFramePermissions": []
+}
