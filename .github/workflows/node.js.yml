@@ -1,0 +1,50 @@
+name: Deploy React App to EC2
+
+on:
+  push:
+    branches:
+      - main  # deploy on pushes to main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+
+    - name: Install dependencies
+      run: |
+        npm install
+
+    - name: Build React app
+      run: |
+        npm run build
+
+    - name: Deploy build to EC2
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        source: "dist/*"
+        target: "/home/ubuntu/notegenie-ai/dist/"
+
+    - name: Set permissions on EC2
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          sudo chown -R www-data:www-data /home/ubuntu/notegenie-ai/dist
+          sudo chmod -R 755 /home/ubuntu/notegenie-ai/dist
+          sudo chmod 755 /home/ubuntu/notegenie-ai
+          sudo chmod 755 /home/ubuntu
+          sudo systemctl restart nginx
